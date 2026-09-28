@@ -15,7 +15,7 @@ RUN apk add --no-cache curl
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
-RUN mkdir -p uploads
+RUN mkdir -p uploads && chown -R node:node uploads
 
 # Run as non-root user for security
 USER node

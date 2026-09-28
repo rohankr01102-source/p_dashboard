@@ -52,11 +52,30 @@ export const VocalRangeVisualization: React.FC<VocalRangeVisualizationProps> = (
 }) => {
   const [selectedNote, setSelectedNote] = useState(chromaticNotes[18]); // F#4
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
 
-  // Play synthetic tone using browser Web Audio API
+  React.useEffect(() => {
+    return () => {
+      if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
+        audioCtxRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  // Play synthetic tone using browser Web Audio API singleton
   const playTone = (freq: number) => {
     try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (typeof window === "undefined") return;
+      if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
+        const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioCtxClass) return;
+        audioCtxRef.current = new AudioCtxClass();
+      }
+      const audioCtx = audioCtxRef.current;
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume().catch(() => {});
+      }
+
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
@@ -64,14 +83,14 @@ export const VocalRangeVisualization: React.FC<VocalRangeVisualizationProps> = (
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
       gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
 
       osc.connect(gain);
       gain.connect(audioCtx.destination);
 
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.55);
+      osc.stop(audioCtx.currentTime + 0.52);
 
       setIsPlaying(true);
       setTimeout(() => setIsPlaying(false), 500);

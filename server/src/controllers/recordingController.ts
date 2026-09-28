@@ -76,7 +76,11 @@ export class RecordingController {
     RecordingValidators.validateId(id);
 
     const userId = (req as any).user?._id?.toString() || (req as any).user?.id?.toString();
-    const recording = await this.recordingService.getRecordingById(id, userId || "");
+    if (!userId) {
+      throw new UnauthorizedError("Authentication required to view recording.");
+    }
+
+    const recording = await this.recordingService.getRecordingById(id, userId);
     const analysis = await this.analysisService.getAnalysisByRecording(id, recording.userId);
 
     return ApiResponse.success(res, { ...recording, analysis }, "Recording retrieved successfully.");
@@ -130,11 +134,13 @@ export class RecordingController {
       throw new ForbiddenError("Access to the requested file is forbidden.");
     }
 
-    if (!fs.existsSync(filePath)) {
+    let stat: fs.Stats;
+    try {
+      stat = await fs.promises.stat(filePath);
+    } catch {
       throw new NotFoundError("Audio track not found.");
     }
 
-    const stat = fs.statSync(filePath);
     const fileSize = stat.size;
     const range = req.headers.range;
 
