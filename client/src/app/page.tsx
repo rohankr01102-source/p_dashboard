@@ -8,11 +8,13 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { AudioStudio } from "@/components/studio/AudioStudio";
 import { SessionsListView } from "@/components/sessions/SessionsListView";
+import { RecordingsView } from "@/components/recordings/RecordingsView";
 import { AnalyticsView } from "@/components/analytics/AnalyticsView";
 import { GoalsView } from "@/components/goals/GoalsView";
 import { AchievementsView } from "@/components/achievements/AchievementsView";
 import { ReportsView } from "@/components/reports/ReportsView";
 import { ProfileView } from "@/components/profile/ProfileView";
+import { SettingsView } from "@/components/settings/SettingsView";
 import { SessionDetailModal } from "@/components/sessions/SessionDetailModal";
 
 import { useVocalStore } from "@/store/useVocalStore";
@@ -221,17 +223,15 @@ export default function VocalyticsHome() {
                   />
                 )}
 
-                {activeTab === "studio" && <AudioStudio />}
+                {activeTab === "analytics" && (
+                  <AnalyticsView analyticsData={analyticsData} />
+                )}
 
-                {activeTab === "sessions" && (
-                  <SessionsListView
+                {(activeTab === "recordings" || activeTab === "sessions") && (
+                  <RecordingsView
                     sessions={sessionsData}
                     onRefresh={refreshAll}
                   />
-                )}
-
-                {activeTab === "analytics" && (
-                  <AnalyticsView analyticsData={analyticsData} />
                 )}
 
                 {activeTab === "goals" && (
@@ -242,12 +242,16 @@ export default function VocalyticsHome() {
                   <AchievementsView achievementsData={achievementsData} />
                 )}
 
-                {activeTab === "reports" && (
-                  <ReportsView reports={reportsData} onRefresh={refetchReports} />
-                )}
-
                 {activeTab === "profile" && (
                   <ProfileView user={user} onRefresh={refetchProfile} />
+                )}
+
+                {activeTab === "settings" && <SettingsView />}
+
+                {activeTab === "studio" && <AudioStudio />}
+
+                {activeTab === "reports" && (
+                  <ReportsView reports={reportsData} onRefresh={refetchReports} />
                 )}
               </>
             )}

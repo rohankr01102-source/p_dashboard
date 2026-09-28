@@ -1,12 +1,33 @@
 "use client";
 
-import React from "react";
-import { Mic, Upload, Sparkles, Target, Award, ArrowUpRight, Flame, ChevronRight } from "lucide-react";
-import { StatCards } from "./StatCards";
-import { VocalRadarOverview } from "./VocalRadarOverview";
-import { RecentSessions } from "./RecentSessions";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Mic,
+  Upload,
+  Sparkles,
+  Zap,
+  TrendingUp,
+  Layers,
+  Calendar,
+  Share2,
+  Download,
+} from "lucide-react";
+import { IUser, ISession, IGoal, IAchievement } from "@/types";
 import { useVocalStore } from "@/store/useVocalStore";
-import { ISession, IUser, IGoal, IAchievement } from "@/types";
+import { mockAnalyticsData, mockSessions } from "@/lib/mockData";
+
+// The 10 Requested Dashboard Widgets
+import { PracticeHoursCard } from "./widgets/PracticeHoursCard";
+import { SingingStreakCard } from "./widgets/SingingStreakCard";
+import { UploadCountCard } from "./widgets/UploadCountCard";
+import { PerformanceScoreCard } from "./widgets/PerformanceScoreCard";
+import { PitchTrendChart } from "./widgets/PitchTrendChart";
+import { TempoTrendChart } from "./widgets/TempoTrendChart";
+import { VocalRangeVisualization } from "./widgets/VocalRangeVisualization";
+import { WeeklyGoalProgress } from "./widgets/WeeklyGoalProgress";
+import { AiFeedbackPanel } from "./widgets/AiFeedbackPanel";
+import { RecentRecordingsTable } from "./widgets/RecentRecordingsTable";
 
 interface DashboardOverviewProps {
   user: IUser | null;
@@ -23,38 +44,55 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   achievements,
   analyticsData,
 }) => {
-  const { setActiveTab, setSelectedSession } = useVocalStore();
+  const { setActiveTab, showNotification } = useVocalStore();
+  const [dashboardTimeFilter, setDashboardTimeFilter] = useState<"This Week" | "This Month" | "All-Time">("This Week");
 
-  const activeGoals = goals.filter((g) => !g.isCompleted);
-  const nextBadge = achievements.find((a) => !a.isUnlocked);
+  const effectiveSessions = sessions && sessions.length > 0 ? sessions : mockSessions;
+  const kpis = analyticsData?.kpis || mockAnalyticsData.kpis;
+
+  const handleExportData = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ user, sessions: effectiveSessions, kpis }, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `vocalytics_report_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showNotification("Exported vocal telemetry dataset (JSON)", "success");
+  };
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-r from-brand-950/60 via-[#0c1427]/80 to-brand-950/40 p-6 md:p-8 backdrop-blur-2xl shadow-glass">
-        {/* Glow orb */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-neon-cyan/15 blur-3xl" />
+      {/* Linear / Stripe Caliber Hero Header Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-r from-brand-950/60 via-[#0c1427]/90 to-brand-950/40 p-6 md:p-8 backdrop-blur-2xl shadow-glass"
+      >
+        {/* Ambient background glows */}
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-neon-cyan/15 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-brand-500/15 blur-3xl" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center space-x-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-3 py-1 text-xs font-semibold text-neon-cyan mb-3">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Vocalytics AI Audio Engine v1.0 Ready</span>
+              <span>Vocal Coach AI 4.0 DSP Engine Active</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
-              Elevate Your Voice,{" "}
+              Welcome back,{" "}
               <span className="bg-gradient-to-r from-neon-cyan via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                {user?.name || "Elena"}
+                {user?.name || "Elena Vance"}
               </span>
             </h1>
             <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-              Your intonation accuracy has improved by <strong className="text-neon-cyan">+4.2%</strong> this week.
-              Current vocal tessitura shows healthy stability across your <strong className="text-white">C3 – A4</strong> range.
+              Your intonation accuracy has improved by <strong className="text-neon-cyan font-bold">+4.6%</strong> this week.
+              Acoustic tessitura shows rock-solid stability across your <strong className="text-white font-mono">C3 &ndash; A5</strong> vocal range.
             </p>
           </div>
 
-          {/* Quick Action CTAs */}
+          {/* Quick Action CTA Bar */}
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setActiveTab("studio")}
@@ -66,120 +104,113 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
             <button
               onClick={() => setActiveTab("studio")}
-              className="flex items-center space-x-2 rounded-2xl border border-white/[0.12] bg-white/[0.04] px-5 py-3 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08]"
+              className="flex items-center space-x-2 rounded-2xl border border-white/[0.12] bg-white/[0.04] px-4 py-3 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08]"
             >
               <Upload className="h-4 w-4 text-slate-400" />
-              <span>Upload Audio Take</span>
+              <span>Upload Take</span>
             </button>
-          </div>
-        </div>
-      </div>
 
-      {/* KPI Cards */}
-      <StatCards user={user} analyticsData={analyticsData} />
-
-      {/* Radar Geometry & Intonation Area Chart */}
-      <VocalRadarOverview
-        radarMetrics={analyticsData?.radarMetrics}
-        progressTimeline={analyticsData?.progressTimeline}
-      />
-
-      {/* Lower Section: Recent Sessions + Active Goals / Badges */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Recent Practice Sessions (8 Cols) */}
-        <div className="space-y-4 lg:col-span-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-bold text-white tracking-tight">
-                Recent Vocal Practice Sessions
-              </h3>
-              <p className="text-xs text-slate-400">
-                Latest takes evaluated with pitch contour, vibrato rate & AI coaching drills.
-              </p>
-            </div>
             <button
-              onClick={() => setActiveTab("sessions")}
-              className="flex items-center text-xs font-semibold text-neon-cyan hover:underline"
+              onClick={handleExportData}
+              className="flex items-center space-x-2 rounded-2xl border border-white/[0.12] bg-white/[0.04] px-3.5 py-3 text-xs font-semibold text-slate-400 hover:text-white transition hover:bg-white/[0.08]"
+              title="Export telemetry"
             >
-              <span>View All ({sessions.length})</span>
-              <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+              <Download className="h-4 w-4" />
             </button>
           </div>
-
-          <RecentSessions sessions={sessions} />
         </div>
+      </motion.div>
 
-        {/* Goals & Next Badge Unlocks (4 Cols) */}
-        <div className="space-y-6 lg:col-span-4">
-          {/* Active Goals Card */}
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 backdrop-blur-xl shadow-glass">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Target className="h-4 w-4 text-brand-400" />
-                <h4 className="text-sm font-bold text-white">Active Goals</h4>
-              </div>
-              <button
-                onClick={() => setActiveTab("goals")}
-                className="text-[11px] text-neon-cyan hover:underline font-semibold"
-              >
-                Manage
-              </button>
-            </div>
+      {/* ========================================================
+          WIDGETS 1 - 4: Top Primary KPI Cards Grid
+          1. Practice Hours Card
+          2. Singing Streak Card
+          3. Upload Count Card
+          4. Performance Score Card
+         ======================================================== */}
+      <section aria-label="Key Performance Indicators">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Widget 1: Practice Hours Card */}
+          <PracticeHoursCard
+            totalHours={kpis.totalPracticeHours ?? 24.5}
+            totalMinutes={kpis.totalMinutes ?? 1470}
+            monthlyTargetHours={30}
+            weeklyDeltaPct={18.4}
+          />
 
-            <div className="mt-4 space-y-3">
-              {activeGoals.slice(0, 3).map((goal) => {
-                const pct = Math.min(100, Math.round((goal.currentValue / goal.targetValue) * 100));
-                return (
-                  <div key={goal._id} className="rounded-xl border border-white/[0.05] bg-white/[0.01] p-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-200">{goal.title}</span>
-                      <span className="font-mono text-neon-cyan font-bold">{pct}%</span>
-                    </div>
-                    {/* Progress Bar */}
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-brand-500 to-neon-cyan transition-all duration-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-400">
-                      <span>{goal.currentValue} / {goal.targetValue} {goal.unit}</span>
-                      <span>Target: this week</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {/* Widget 2: Singing Streak Card */}
+          <SingingStreakCard
+            currentStreak={user?.streakDays ?? user?.currentStreak ?? kpis.streakDays ?? 14}
+            longestStreak={user?.longestStreak ?? 28}
+          />
+
+          {/* Widget 3: Upload Count Card */}
+          <UploadCountCard
+            totalUploads={effectiveSessions.length || kpis.totalSessions || 84}
+            weeklyUploads={kpis.weeklyUploadCount ?? 8}
+            storageUsedBytes={kpis.storageUsedBytes ?? 1488977920}
+            storageMaxBytes={kpis.storageMaxBytes ?? 5368709120}
+          />
+
+          {/* Widget 4: Performance Score Card */}
+          <PerformanceScoreCard
+            score={kpis.overallScore ?? 92.4}
+            grade="A+"
+            weeklyDelta={kpis.weeklyGrowthPct ?? 4.6}
+            intonationAccuracy={Math.round(kpis.avgPitchAccuracy ?? 94.2)}
+            tempoConsistency={Math.round(kpis.avgTempoStability ?? 89.8)}
+            timbreClarity={93.1}
+          />
+        </div>
+      </section>
+
+      {/* ========================================================
+          WIDGETS 5 & 6: Longitudinal Trend Charts Grid (Recharts)
+          5. Pitch Trend Chart
+          6. Tempo Trend Chart
+         ======================================================== */}
+      <section aria-label="Pitch and Tempo Analytics">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Widget 5: Pitch Trend Chart */}
+          <PitchTrendChart data={analyticsData?.pitchTrend} />
+
+          {/* Widget 6: Tempo Trend Chart */}
+          <TempoTrendChart data={analyticsData?.tempoTrend} />
+        </div>
+      </section>
+
+      {/* ========================================================
+          WIDGETS 7 & 8: Range Visualizer & Weekly Goal Progress
+          7. Vocal Range Visualization
+          8. Weekly Goal Progress
+         ======================================================== */}
+      <section aria-label="Vocal Range and Goals">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Widget 7: Vocal Range Visualization (7 Cols) */}
+          <div className="lg:col-span-7">
+            <VocalRangeVisualization rangeData={analyticsData?.vocalRange} />
           </div>
 
-          {/* Next Achievement Card */}
-          {nextBadge && (
-            <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-5 backdrop-blur-xl shadow-glass">
-              <div className="flex items-center space-x-2 text-amber-300">
-                <Award className="h-4 w-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">Next Unlockable Badge</span>
-              </div>
-              <h4 className="mt-2 text-sm font-extrabold text-white">{nextBadge.title}</h4>
-              <p className="mt-1 text-xs text-slate-300 leading-relaxed">{nextBadge.description}</p>
-              
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-[11px] font-semibold">
-                  <span className="text-slate-400">Progress</span>
-                  <span className="text-amber-400 font-mono">
-                    {nextBadge.progress} / {nextBadge.maxProgress}
-                  </span>
-                </div>
-                <div className="mt-1.5 h-1.5 w-full rounded-full bg-white/[0.1] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-amber-400"
-                    style={{ width: `${Math.min(100, (nextBadge.progress / nextBadge.maxProgress) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Widget 8: Weekly Goal Progress (5 Cols) */}
+          <div className="lg:col-span-5">
+            <WeeklyGoalProgress />
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ========================================================
+          WIDGET 9: AI Feedback Panel
+         ======================================================== */}
+      <section aria-label="AI Feedback and Diagnostics">
+        <AiFeedbackPanel feedback={analyticsData?.aiFeedback} />
+      </section>
+
+      {/* ========================================================
+          WIDGET 10: Recent Recordings Table
+         ======================================================== */}
+      <section aria-label="Recent Vocal Recordings">
+        <RecentRecordingsTable sessions={effectiveSessions} />
+      </section>
     </div>
   );
 };

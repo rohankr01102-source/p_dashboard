@@ -3,13 +3,15 @@ import { ISession, IUser, IGoal, IAchievement, IReport } from "../types";
 
 export type NavTab =
   | "dashboard"
-  | "studio"
   | "analytics"
+  | "recordings"
   | "sessions"
   | "goals"
   | "achievements"
-  | "reports"
-  | "profile";
+  | "profile"
+  | "settings"
+  | "studio"
+  | "reports";
 
 interface VocalState {
   activeTab: NavTab;

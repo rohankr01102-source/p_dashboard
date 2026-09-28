@@ -3,15 +3,17 @@
 import React from "react";
 import {
   LayoutDashboard,
-  Mic2,
-  Library,
   LineChart,
+  Disc3,
   Target,
   Award,
-  FileText,
   UserCheck,
+  Settings,
+  Mic2,
   Cpu,
   Sparkles,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
 import { useVocalStore, NavTab } from "@/store/useVocalStore";
 import { cn } from "@/lib/utils";
@@ -21,17 +23,18 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   badge?: string;
+  section?: string;
 }
 
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "studio", label: "Audio Studio & AI", icon: Mic2, badge: "Live" },
-  { id: "sessions", label: "Practice History", icon: Library },
-  { id: "analytics", label: "Vocal Analytics", icon: LineChart },
-  { id: "goals", label: "Goals & Habits", icon: Target },
+  { id: "analytics", label: "Practice Analytics", icon: LineChart },
+  { id: "recordings", label: "Recordings", icon: Disc3, badge: "84 Takes" },
+  { id: "goals", label: "Goals", icon: Target },
   { id: "achievements", label: "Achievements", icon: Award },
-  { id: "reports", label: "Vocal Reports", icon: FileText },
-  { id: "profile", label: "Singer Profile", icon: UserCheck },
+  { id: "profile", label: "Profile", icon: UserCheck },
+  { id: "settings", label: "Settings", icon: Settings },
+  { id: "studio", label: "Live Audio Studio", icon: Mic2, badge: "DSP Live" },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -41,22 +44,36 @@ export const Sidebar: React.FC = () => {
     <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-white/[0.08] bg-[#090d16]/95 backdrop-blur-2xl p-4">
       {/* Navigation Links */}
       <div className="space-y-6">
+        {/* Workspace Quick Header */}
+        <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+          <div className="flex items-center space-x-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/20 text-neon-cyan font-bold text-xs">
+              V
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white leading-none">Elena&apos;s Studio</div>
+              <div className="text-[10px] text-slate-500 leading-none mt-1">Vocal Coach Pro</div>
+            </div>
+          </div>
+          <span className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+        </div>
+
         <div>
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Platform Menu
+          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            Platform Navigation
           </p>
           <nav className="mt-2 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = activeTab === item.id || (item.id === "recordings" && activeTab === "sessions");
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   className={cn(
-                    "group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200",
+                    "group flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200",
                     isActive
-                      ? "bg-gradient-to-r from-brand-600/20 to-neon-cyan/10 text-white border border-brand-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]"
+                      ? "bg-gradient-to-r from-brand-600/25 to-neon-cyan/15 text-white border border-brand-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)] font-bold"
                       : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                   )}
                 >
@@ -64,13 +81,20 @@ export const Sidebar: React.FC = () => {
                     <Icon
                       className={cn(
                         "h-4 w-4 transition-transform group-hover:scale-110",
-                        isActive ? "text-neon-cyan" : "text-slate-400 group-hover:text-slate-200"
+                        isActive ? "text-neon-cyan" : "text-slate-500 group-hover:text-slate-300"
                       )}
                     />
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-[9px] font-bold border",
+                        item.badge.includes("Live")
+                          ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse"
+                          : "bg-white/[0.06] text-slate-400 border-white/[0.08]"
+                      )}
+                    >
                       {item.badge}
                     </span>
                   )}
@@ -92,10 +116,10 @@ export const Sidebar: React.FC = () => {
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
           </div>
           <p className="mt-2 text-[10px] text-slate-400 leading-relaxed">
-            Librosa YIN Algorithm, Vibrato FFT Spectrum & Formant Resonance Active
+            Librosa YIN Pitch Tracker, Vibrato FFT Spectrum & Formant Resonance Active
           </p>
           <div className="mt-2.5 flex items-center justify-between border-t border-white/[0.06] pt-2 text-[10px] text-slate-400">
-            <span>Latency</span>
+            <span>DSP Latency</span>
             <span className="text-emerald-400 font-mono font-semibold">18ms</span>
           </div>
         </div>
