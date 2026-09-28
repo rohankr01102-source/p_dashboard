@@ -1,0 +1,47 @@
+# ──────────────────────────────────────────────
+# Vocalytics AI — Root .gitignore
+# ──────────────────────────────────────────────
+
+# Environment secrets — NEVER commit these
+.env
+.env.local
+.env.production
+.env.staging
+server/.env
+server/.env.production
+server/.env.local
+client/.env.local
+
+# Node.js
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# TypeScript build output
+server/dist/
+
+# Next.js build output
+client/.next/
+client/out/
+
+# Uploaded audio files (persisted via Docker volume)
+server/uploads/
+uploads/
+
+# Python
+ai-service/__pycache__/
+ai-service/.pytest_cache/
+ai-service/*.pyc
+ai-service/*.pyo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+logs/
