@@ -134,7 +134,35 @@ async function run() {
     const badLogin2 = await request("POST", "/api/auth/login", { email: "nonexistent@example.com", password: "wrongpassword123" });
     assert("POST /api/auth/login non-existent user rejected with 401", badLogin2.status === 401, badLogin2);
 
-    // 8. 404 Route Not Found handling
+    // 8. Advanced Modules Test Suite
+    const streakRes = await request("GET", "/api/streak", null, token);
+    assert("GET /api/streak returns 200 with currentStreak and history", streakRes.status === 200 && streakRes.body?.data?.currentStreak !== undefined, streakRes);
+
+    const freezeRes = await request("POST", "/api/streak/freeze", {}, token);
+    assert("POST /api/streak/freeze executes with shield response", freezeRes.status === 200 || freezeRes.status === 400, freezeRes);
+
+    const achEval = await request("POST", "/api/achievements/evaluate", {}, token);
+    assert("POST /api/achievements/evaluate dynamically evaluates badges", achEval.status === 200 && Array.isArray(achEval.body?.data?.achievements), achEval);
+
+    const calRes = await request("GET", "/api/calendar", null, token);
+    assert("GET /api/calendar returns monthly heatmap and day records", calRes.status === 200 && Array.isArray(calRes.body?.data?.days), calRes);
+
+    const recRes = await request("GET", "/api/recommendations/smart", null, token);
+    assert("GET /api/recommendations/smart returns duration and warmups", recRes.status === 200 && recRes.body?.data?.suggestedDuration !== undefined, recRes);
+
+    const pbRes = await request("GET", "/api/analytics/personal-bests", null, token);
+    assert("GET /api/analytics/personal-bests returns personal record items", pbRes.status === 200 && Array.isArray(pbRes.body?.data?.records), pbRes);
+
+    const emailPrev = await request("GET", "/api/reports/email-preview?period=WEEKLY", null, token);
+    assert("GET /api/reports/email-preview returns valid HTML email template", emailPrev.status === 200 && typeof emailPrev.body?.data?.html === "string", emailPrev);
+
+    const emailSend = await request("POST", "/api/reports/send-email-summary", { period: "WEEKLY" }, token);
+    assert("POST /api/reports/send-email-summary dispatches report digest", emailSend.status === 200 && emailSend.body?.data?.delivered === true, emailSend);
+
+    const emailPrefs = await request("GET", "/api/users/email-preferences", null, token);
+    assert("GET /api/users/email-preferences returns notification toggles", emailPrefs.status === 200 && emailPrefs.body?.data?.weeklyDigest !== undefined, emailPrefs);
+
+    // 9. 404 Route Not Found handling
     const notFound = await request("GET", "/api/non-existent-route-for-testing");
     assert(
       "404 Route Not Found returns standardized error envelope with ROUTE_NOT_FOUND code",

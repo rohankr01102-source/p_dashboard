@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getPracticeAnalytics } from "../controllers/analyticsController";
+import { getPracticeAnalytics, getPersonalBests } from "../controllers/analyticsController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 router.use(authMiddleware);
 
 router.get("/", getPracticeAnalytics);
+router.get("/personal-bests", getPersonalBests);
 
 export default router;

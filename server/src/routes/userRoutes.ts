@@ -17,4 +17,8 @@ router.patch("/preferences", authMiddleware, userController.updatePreferences);
 router.put("/preferences", authMiddleware, userController.updatePreferences);
 router.get("/stats", authMiddleware, userController.getUserStats);
 
+// Email Preferences
+router.get("/email-preferences", authMiddleware, userController.getEmailPreferences);
+router.put("/email-preferences", authMiddleware, userController.updateEmailPreferences);
+
 export default router;

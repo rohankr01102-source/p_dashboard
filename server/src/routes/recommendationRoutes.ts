@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getAchievements, evaluateAchievements } from "../controllers/achievementController";
+import { getSmartRecommendations } from "../controllers/recommendationController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 router.use(authMiddleware);
 
-router.get("/", getAchievements);
-router.post("/evaluate", evaluateAchievements);
+router.get("/", getSmartRecommendations);
+router.get("/smart", getSmartRecommendations);
 
 export default router;

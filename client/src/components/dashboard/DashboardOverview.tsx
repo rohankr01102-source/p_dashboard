@@ -28,6 +28,8 @@ import { VocalRangeVisualization } from "./widgets/VocalRangeVisualization";
 import { WeeklyGoalProgress } from "./widgets/WeeklyGoalProgress";
 import { AiFeedbackPanel } from "./widgets/AiFeedbackPanel";
 import { RecentRecordingsTable } from "./widgets/RecentRecordingsTable";
+import { SmartRecommendationsPanel } from "./widgets/SmartRecommendationsPanel";
+import { PersonalBestWidget } from "../analytics/PersonalBestWidget";
 
 interface DashboardOverviewProps {
   user: IUser | null;
@@ -196,6 +198,20 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             <WeeklyGoalProgress />
           </div>
         </div>
+      </section>
+
+      {/* ========================================================
+          SMART RECOMMENDATIONS: Suggested Duration, Warmups, Weak Areas
+         ======================================================== */}
+      <section aria-label="Smart Recommendations">
+        <SmartRecommendationsPanel />
+      </section>
+
+      {/* ========================================================
+          PERSONAL BEST TRACKING: All-Time Vocal Records
+         ======================================================== */}
+      <section aria-label="Personal Best Records">
+        <PersonalBestWidget />
       </section>
 
       {/* ========================================================

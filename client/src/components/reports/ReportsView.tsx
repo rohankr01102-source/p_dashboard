@@ -12,11 +12,13 @@ import {
   CheckCircle2,
   Clock,
   Music,
+  Mail,
 } from "lucide-react";
 import { IReport } from "@/types";
 import { generateReport } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { useVocalStore } from "@/store/useVocalStore";
+import { EmailSummaryModal } from "./EmailSummaryModal";
 
 interface ReportsViewProps {
   reports: IReport[];
@@ -30,6 +32,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reports, onRefresh }) 
     safeReports.length > 0 ? safeReports[0] : null
   );
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   const handleGenerate = async (period: "WEEKLY" | "MONTHLY" | "COMPREHENSIVE") => {
     try {
@@ -65,19 +68,36 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reports, onRefresh }) 
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => setIsEmailModalOpen(true)}
+            className="flex items-center space-x-1.5 rounded-xl border border-neon-cyan/30 bg-neon-cyan/10 hover:bg-neon-cyan/20 px-3.5 py-2.5 text-xs font-bold text-neon-cyan shadow-[0_0_12px_rgba(0,245,255,0.2)] transition"
+          >
+            <Mail className="h-4 w-4" />
+            <span>Email Digest & Preview</span>
+          </button>
+
           <button
             onClick={() => handleGenerate("WEEKLY")}
             disabled={isGenerating}
-            className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-neon-cyan px-4 py-2.5 text-xs font-bold text-white shadow-glow transition hover:opacity-95"
+            className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-glow transition hover:opacity-95"
           >
             <Sparkles className="h-4 w-4" />
-            <span>{isGenerating ? "Synthesizing..." : "Generate New Report"}</span>
+            <span>{isGenerating ? "Synthesizing..." : "Weekly Report"}</span>
+          </button>
+
+          <button
+            onClick={() => handleGenerate("MONTHLY")}
+            disabled={isGenerating}
+            className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-3.5 py-2.5 text-xs font-bold text-white shadow-glow transition hover:opacity-95"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>{isGenerating ? "Synthesizing..." : "Monthly Review"}</span>
           </button>
 
           <button
             onClick={() => window.print()}
-            className="flex items-center space-x-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08]"
+            className="flex items-center space-x-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-3.5 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08]"
           >
             <Printer className="h-4 w-4" />
             <span>Print / PDF</span>
@@ -232,6 +252,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reports, onRefresh }) 
           )}
         </div>
       )}
+
+      {/* Email Summary & Digest Modal */}
+      <EmailSummaryModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+      />
     </div>
   );
 };
+

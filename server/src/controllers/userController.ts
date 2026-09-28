@@ -48,4 +48,19 @@ export class UserController {
     const leaderboard = await this.userService.getLeaderboard(limit);
     return ApiResponse.success(res, leaderboard, "Leaderboard retrieved.");
   });
+
+  getEmailPreferences = asyncHandler(async (req: Request, res: Response) => {
+    const userId = this.getAuthUserId(req);
+    const { emailSummaryService } = await import("../services/EmailSummaryService");
+    const prefs = await emailSummaryService.getPreferences(userId);
+    return ApiResponse.success(res, prefs, "Email preferences retrieved.");
+  });
+
+  updateEmailPreferences = asyncHandler(async (req: Request, res: Response) => {
+    const userId = this.getAuthUserId(req);
+    const { emailSummaryService } = await import("../services/EmailSummaryService");
+    const updated = await emailSummaryService.updatePreferences(userId, req.body);
+    return ApiResponse.success(res, updated, "Email preferences updated successfully.");
+  });
 }
+

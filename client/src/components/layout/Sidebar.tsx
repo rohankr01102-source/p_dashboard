@@ -14,6 +14,8 @@ import {
   Sparkles,
   Layers,
   ChevronRight,
+  Calendar,
+  FileText,
 } from "lucide-react";
 import { useVocalStore, NavTab } from "@/store/useVocalStore";
 import { cn } from "@/lib/utils";
@@ -29,9 +31,11 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "analytics", label: "Practice Analytics", icon: LineChart },
+  { id: "calendar", label: "Practice Calendar", icon: Calendar, badge: "Heatmap" },
   { id: "recordings", label: "Recordings", icon: Disc3, badge: "84 Takes" },
   { id: "goals", label: "Goals", icon: Target },
   { id: "achievements", label: "Achievements", icon: Award },
+  { id: "reports", label: "Health Reports", icon: FileText },
   { id: "profile", label: "Profile", icon: UserCheck },
   { id: "settings", label: "Settings", icon: Settings },
   { id: "studio", label: "Live Audio Studio", icon: Mic2, badge: "DSP Live" },

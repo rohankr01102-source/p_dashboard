@@ -11,7 +11,8 @@ export type NavTab =
   | "profile"
   | "settings"
   | "studio"
-  | "reports";
+  | "reports"
+  | "calendar";
 
 interface VocalState {
   activeTab: NavTab;

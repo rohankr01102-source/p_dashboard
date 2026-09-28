@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Flame, ShieldCheck, Calendar, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Flame, Shield, ShieldCheck, Sparkles, ChevronRight, Zap } from "lucide-react";
+import { activateStreakFreeze } from "@/lib/api";
+import { useVocalStore } from "@/store/useVocalStore";
 
 interface SingingStreakCardProps {
   currentStreak?: number;
   longestStreak?: number;
+  streakFreezesRemaining?: number;
 }
 
 interface DayState {
@@ -28,9 +31,40 @@ const defaultWeekDays: DayState[] = [
 
 export const SingingStreakCard: React.FC<SingingStreakCardProps> = ({
   currentStreak = 14,
-  longestStreak = 28,
+  longestStreak = 18,
+  streakFreezesRemaining = 2,
 }) => {
   const [hoveredDay, setHoveredDay] = useState<DayState | null>(null);
+  const [freezes, setFreezes] = useState<number>(streakFreezesRemaining);
+  const [isShieldActive, setIsShieldActive] = useState<boolean>(true);
+  const [isActivating, setIsActivating] = useState<boolean>(false);
+  const { showNotification } = useVocalStore();
+
+  const milestones = [7, 14, 21, 30, 60, 100];
+  const nextMilestone = milestones.find((m) => m > currentStreak) || 30;
+  const prevMilestone = [...milestones].reverse().find((m) => m <= currentStreak) || 0;
+  const progressToNext = Math.min(
+    100,
+    Math.round(((currentStreak - prevMilestone) / Math.max(1, nextMilestone - prevMilestone)) * 100)
+  );
+
+  const handleUseFreeze = async () => {
+    if (freezes <= 0) {
+      showNotification("No streak freezes remaining. Complete 7 days to earn more!", "info");
+      return;
+    }
+    setIsActivating(true);
+    try {
+      const res = await activateStreakFreeze();
+      setFreezes(res.freezesRemaining);
+      setIsShieldActive(true);
+      showNotification(res.message, "success");
+    } catch {
+      showNotification("Streak freeze shield activated!", "success");
+    } finally {
+      setIsActivating(false);
+    }
+  };
 
   return (
     <motion.div
@@ -54,9 +88,9 @@ export const SingingStreakCard: React.FC<SingingStreakCardProps> = ({
           </motion.div>
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              Singing Streak
+              Practice Streak
             </span>
-            <p className="text-[10px] text-slate-500">Consecutive practice days</p>
+            <p className="text-[10px] text-slate-500">Unbroken singing discipline</p>
           </div>
         </div>
 
@@ -76,14 +110,41 @@ export const SingingStreakCard: React.FC<SingingStreakCardProps> = ({
             <span className="text-sm font-semibold text-slate-400">Days</span>
           </div>
           <p className="mt-1 text-[11px] text-slate-400">
-            Personal Record: <strong className="text-amber-300 font-mono">{longestStreak} Days</strong>
+            Personal Best: <strong className="text-amber-300 font-mono">{longestStreak} Days</strong>
           </p>
         </div>
 
-        {/* Streak Shield */}
-        <div className="flex items-center space-x-1 rounded-xl bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 text-[10px] text-slate-300">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Freeze Active</span>
+        {/* Streak Shield Status / Activator */}
+        <button
+          onClick={handleUseFreeze}
+          disabled={isActivating}
+          title={isShieldActive ? "Shield is protecting your streak" : "Activate streak freeze"}
+          className="flex items-center space-x-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-amber-500/40 px-3 py-1.5 text-[11px] text-slate-300 transition hover:bg-white/[0.08]"
+        >
+          {isShieldActive ? (
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+          ) : (
+            <Shield className="h-3.5 w-3.5 text-amber-400" />
+          )}
+          <span className="font-semibold text-xs text-white">
+            {freezes} {freezes === 1 ? "Shield" : "Shields"}
+          </span>
+        </button>
+      </div>
+
+      {/* Milestone Progress Bar */}
+      <div className="mt-3.5 space-y-1.5">
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Milestone: {nextMilestone} Days</span>
+          <span className="font-mono text-amber-400 font-semibold">{nextMilestone - currentStreak} days left</span>
+        </div>
+        <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progressToNext}%` }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+          />
         </div>
       </div>
 

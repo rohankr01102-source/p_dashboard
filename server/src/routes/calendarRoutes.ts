@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getAchievements, evaluateAchievements } from "../controllers/achievementController";
+import { getMonthCalendar } from "../controllers/calendarController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 router.use(authMiddleware);
 
-router.get("/", getAchievements);
-router.post("/evaluate", evaluateAchievements);
+router.get("/", getMonthCalendar);
+router.get("/month", getMonthCalendar);
 
 export default router;

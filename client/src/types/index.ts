@@ -211,3 +211,126 @@ export interface IPracticeSchedule {
   focusArea: string;
   isActive: boolean;
 }
+
+export interface IStreakStatus {
+  currentStreak: number;
+  longestStreak: number;
+  lastPracticeDate: string | null;
+  streakFreezesRemaining: number;
+  isPracticedToday: boolean;
+  streakStatus: "ACTIVE" | "AT_RISK" | "FROZEN" | "BROKEN";
+  nextMilestoneDays: number;
+  daysToNextMilestone: number;
+  streakHistory: Array<{ date: string; practiced: boolean; minutes: number }>;
+}
+
+export interface IPersonalBestItem {
+  id: string;
+  metric: string;
+  label: string;
+  value: string;
+  numericValue: number;
+  unit: string;
+  achievedAt: string;
+  sessionTitle?: string;
+  description: string;
+  tier: "Gold" | "Diamond" | "Platinum";
+}
+
+export interface IPersonalBestsResponse {
+  records: IPersonalBestItem[];
+  totalRecordsBroken: number;
+  lastUpdated: string;
+}
+
+export interface ISuggestedWarmup {
+  id: string;
+  title: string;
+  focus: string;
+  durationMinutes: number;
+  instructions: string;
+  benefit: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+}
+
+export interface IWeakArea {
+  id: string;
+  areaTitle: string;
+  severity: "LOW" | "MODERATE" | "HIGH";
+  metricImpacted: string;
+  diagnosticObservation: string;
+  impactExplanation: string;
+  prescribedRemedy: string;
+}
+
+export interface ISmartRecommendationsResponse {
+  suggestedDuration: {
+    recommendedMinutes: number;
+    intensity: "Light Recovery" | "Balanced Workout" | "High Performance";
+    rationale: string;
+    fatigueRiskLevel: "Low" | "Moderate" | "Elevated";
+  };
+  suggestedWarmups: ISuggestedWarmup[];
+  weakAreas: IWeakArea[];
+  vocalHealthTip: string;
+  lastAnalyzedAt: string;
+}
+
+export interface ICalendarDaySession {
+  id: string;
+  title: string;
+  durationMinutes: number;
+  overallScore: number;
+  pitchAccuracy: number;
+  tags: string[];
+}
+
+export interface ICalendarDay {
+  date: string;
+  dayNumber: number;
+  dayOfWeek: number;
+  minutesPracticed: number;
+  sessionCount: number;
+  averageScore: number | null;
+  intensity: 0 | 1 | 2 | 3 | 4;
+  sessions: ICalendarDaySession[];
+  isToday: boolean;
+  isFuture: boolean;
+}
+
+export interface ICalendarMonthResponse {
+  year: number;
+  month: number;
+  monthName: string;
+  daysInMonth: number;
+  activeDaysCount: number;
+  totalPracticeMinutes: number;
+  currentStreak: number;
+  longestStreak: number;
+  consistencyRate: number;
+  days: ICalendarDay[];
+}
+
+export interface IEmailPreferences {
+  weeklyDigest: boolean;
+  monthlyReport: boolean;
+  streakAlerts: boolean;
+  achievementAlerts: boolean;
+  emailAddress?: string;
+}
+
+export interface IEmailPreviewResponse {
+  subject: string;
+  html: string;
+  text: string;
+  data: {
+    userName: string;
+    email: string;
+    totalMinutes: number;
+    streakDays: number;
+    avgScore: number;
+    avgPitch: number;
+    topSessionTitle: string;
+  };
+}
+

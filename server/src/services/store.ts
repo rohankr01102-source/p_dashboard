@@ -8,14 +8,15 @@ import { Report, IReport } from "../models/Report";
 import { Recording } from "../models/Recording";
 import { Analysis } from "../models/Analysis";
 import { PracticeSession } from "../models/PracticeSession";
+import { Notification } from "../models/Notification";
 
-// In-Memory fallback repositories to ensure zero-failure operation
 export const memoryStore = {
   users: [] as any[],
   sessions: [] as any[],
   goals: [] as any[],
   achievements: [] as any[],
   reports: [] as any[],
+  notifications: [] as any[],
 };
 
 
@@ -377,21 +378,79 @@ export const initSeedData = async () => {
 
   const defaultAchievements = [
     {
+      _id: "65a000000000000000000030",
+      userId: demoUserId,
+      badgeKey: "first-upload",
+      title: "First Upload",
+      description: "Uploaded and processed your maiden vocal take into the studio.",
+      icon: "Mic",
+      category: "MILESTONE",
+      progress: 1,
+      maxProgress: 1,
+      isUnlocked: true,
+      unlockedAt: new Date(Date.now() - 30 * 86400000),
+      tier: "Bronze",
+      points: 50,
+    },
+    {
       _id: "65a000000000000000000031",
       userId: demoUserId,
-      badgeKey: "pitch-perfect-90",
-      title: "Pitch Perfect Prodigy",
-      description: "Achieved over 90% intonation accuracy across an entire practice session.",
-      icon: "Crosshair",
-      category: "INTONATION",
-      progress: 100,
-      maxProgress: 100,
+      badgeKey: "streak-7",
+      title: "7 Day Streak",
+      description: "Completed 7 consecutive days of vocal practice without missing a beat.",
+      icon: "Flame",
+      category: "DEDICATION",
+      progress: 7,
+      maxProgress: 7,
       isUnlocked: true,
-      unlockedAt: new Date(Date.now() - 4 * 86400000),
-      tier: "Gold",
+      unlockedAt: new Date(Date.now() - 5 * 86400000),
+      tier: "Silver",
+      points: 150,
     },
     {
       _id: "65a000000000000000000032",
+      userId: demoUserId,
+      badgeKey: "streak-30",
+      title: "30 Day Streak",
+      description: "A full month of continuous dedication and vocal discipline.",
+      icon: "Zap",
+      category: "DEDICATION",
+      progress: 12,
+      maxProgress: 30,
+      isUnlocked: false,
+      tier: "Diamond",
+      points: 500,
+    },
+    {
+      _id: "65a000000000000000000033",
+      userId: demoUserId,
+      badgeKey: "pitch-master",
+      title: "Pitch Master",
+      description: "Achieved pristine pitch accuracy of 95%+ in an analyzed practice take.",
+      icon: "Crosshair",
+      category: "INTONATION",
+      progress: 92,
+      maxProgress: 95,
+      isUnlocked: false,
+      tier: "Gold",
+      points: 300,
+    },
+    {
+      _id: "65a000000000000000000034",
+      userId: demoUserId,
+      badgeKey: "consistency-king",
+      title: "Consistency King",
+      description: "Completed 20+ vocal practice sessions or 5 sessions in a single week.",
+      icon: "Crown",
+      category: "DEDICATION",
+      progress: 14,
+      maxProgress: 20,
+      isUnlocked: false,
+      tier: "Gold",
+      points: 350,
+    },
+    {
+      _id: "65a000000000000000000035",
       userId: demoUserId,
       badgeKey: "vibrato-virtuoso",
       title: "Vibrato Virtuoso",
@@ -403,9 +462,10 @@ export const initSeedData = async () => {
       isUnlocked: true,
       unlockedAt: new Date(Date.now() - 6 * 86400000),
       tier: "Silver",
+      points: 175,
     },
     {
-      _id: "65a000000000000000000033",
+      _id: "65a000000000000000000036",
       userId: demoUserId,
       badgeKey: "range-2-octaves",
       title: "Two-Octave Titan",
@@ -416,23 +476,10 @@ export const initSeedData = async () => {
       maxProgress: 24,
       isUnlocked: false,
       tier: "Silver",
+      points: 200,
     },
     {
-      _id: "65a000000000000000000034",
-      userId: demoUserId,
-      badgeKey: "streak-10",
-      title: "Unstoppable Momentum",
-      description: "Maintained a continuous daily practice streak of 10+ days.",
-      icon: "Flame",
-      category: "DEDICATION",
-      progress: 12,
-      maxProgress: 10,
-      isUnlocked: true,
-      unlockedAt: new Date(Date.now() - 2 * 86400000),
-      tier: "Gold",
-    },
-    {
-      _id: "65a000000000000000000035",
+      _id: "65a000000000000000000037",
       userId: demoUserId,
       badgeKey: "high-c-club",
       title: "The High C Club (C5)",
@@ -443,20 +490,7 @@ export const initSeedData = async () => {
       maxProgress: 100,
       isUnlocked: false,
       tier: "Diamond",
-    },
-    {
-      _id: "65a000000000000000000036",
-      userId: demoUserId,
-      badgeKey: "first-session",
-      title: "First Phonation",
-      description: "Completed and analyzed your maiden vocal session with Vocalytics AI.",
-      icon: "Mic",
-      category: "MILESTONE",
-      progress: 100,
-      maxProgress: 100,
-      isUnlocked: true,
-      unlockedAt: new Date(Date.now() - 30 * 86400000),
-      tier: "Bronze",
+      points: 400,
     },
   ];
 
@@ -504,12 +538,56 @@ export const initSeedData = async () => {
     },
   ];
 
+  const defaultNotifications = [
+    {
+      _id: "65a000000000000000000051",
+      userId: demoUserId,
+      title: "🔥 12-Day Practice Streak!",
+      message: "You've maintained your singing streak for 12 days in a row! 2 days until your 14-day milestone.",
+      type: "STREAK_WARNING",
+      priority: "HIGH",
+      isRead: false,
+      createdAt: new Date(Date.now() - 2 * 3600 * 1000),
+    },
+    {
+      _id: "65a000000000000000000052",
+      userId: demoUserId,
+      title: "🏆 Achievement Unlocked: First Upload",
+      message: "Congratulations! You earned 50 XP for uploading and analyzing your maiden practice take.",
+      type: "BADGE_UNLOCKED",
+      priority: "MEDIUM",
+      isRead: false,
+      createdAt: new Date(Date.now() - 24 * 3600 * 1000),
+    },
+    {
+      _id: "65a000000000000000000053",
+      userId: demoUserId,
+      title: "📊 Weekly Performance Report Ready",
+      message: "Your vocal health and performance evaluation for Week 38 is now available to review.",
+      type: "ANALYSIS_READY",
+      priority: "LOW",
+      isRead: true,
+      createdAt: new Date(Date.now() - 3 * 86400000),
+    },
+    {
+      _id: "65a000000000000000000054",
+      userId: demoUserId,
+      title: "🎯 Goal Progress Milestone: 99% Complete",
+      message: "You have completed 495 of 500 practice minutes this month! Almost there.",
+      type: "GOAL_ACHIEVED",
+      priority: "MEDIUM",
+      isRead: true,
+      createdAt: new Date(Date.now() - 4 * 86400000),
+    },
+  ];
+
   // Load into memory store
   memoryStore.users = [defaultUser];
   memoryStore.sessions = sampleSessions;
   memoryStore.goals = defaultGoals;
   memoryStore.achievements = defaultAchievements;
   memoryStore.reports = defaultReports;
+  memoryStore.notifications = defaultNotifications;
 
   // If MongoDB connected, sync into MongoDB collections
   if (isConnectedToMongo) {
@@ -606,6 +684,11 @@ export const initSeedData = async () => {
       if (reportCount === 0) {
         await Report.insertMany(defaultReports);
         Logger.info("[Seed] Reports synced to MongoDB.");
+      }
+      const notifCount = await Notification.countDocuments();
+      if (notifCount === 0) {
+        await Notification.insertMany(defaultNotifications);
+        Logger.info("[Seed] Notifications synced to MongoDB.");
       }
     } catch (e: any) {
       Logger.warn("[Seed] MongoDB sync skipped:", e.message);

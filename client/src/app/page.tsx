@@ -16,6 +16,7 @@ import { ReportsView } from "@/components/reports/ReportsView";
 import { ProfileView } from "@/components/profile/ProfileView";
 import { SettingsView } from "@/components/settings/SettingsView";
 import { SessionDetailModal } from "@/components/sessions/SessionDetailModal";
+import { PracticeCalendarView } from "@/components/calendar/PracticeCalendarView";
 
 import { useVocalStore } from "@/store/useVocalStore";
 import {
@@ -249,6 +250,8 @@ export default function VocalyticsHome() {
                 {activeTab === "settings" && <SettingsView />}
 
                 {activeTab === "studio" && <AudioStudio />}
+
+                {activeTab === "calendar" && <PracticeCalendarView />}
 
                 {activeTab === "reports" && (
                   <ReportsView reports={reportsData} onRefresh={refetchReports} />

@@ -1,4 +1,17 @@
-import { IUser, ISession, IGoal, IAchievement, IReport } from "../types";
+import {
+  IUser,
+  ISession,
+  IGoal,
+  IAchievement,
+  IReport,
+  IStreakStatus,
+  IPersonalBestsResponse,
+  ISmartRecommendationsResponse,
+  ICalendarMonthResponse,
+  IEmailPreferences,
+  IEmailPreviewResponse,
+  INotification,
+} from "../types";
 
 export interface IMockPitchTrendPoint {
   date: string;
@@ -616,51 +629,77 @@ export const mockAchievements: IAchievement[] = [
   {
     _id: "ach-1",
     userId: "user-elena-vance-pro",
-    badgeKey: "pitch_maestro",
-    title: "Centering Virtuoso",
-    description: "Maintained < 6 cents deviation across 5 consecutive practice sessions.",
-    icon: "Target",
-    category: "INTONATION",
-    progress: 5,
-    maxProgress: 5,
+    badgeKey: "first-upload",
+    title: "First Upload",
+    description: "Uploaded and processed your maiden vocal take into the studio.",
+    icon: "Mic",
+    category: "MILESTONE",
+    progress: 1,
+    maxProgress: 1,
     isUnlocked: true,
-    unlockedAt: "2026-09-28T10:15:00.000Z",
-    tier: "Diamond",
+    unlockedAt: "2026-08-28T10:15:00.000Z",
+    tier: "Bronze",
   },
   {
     _id: "ach-2",
     userId: "user-elena-vance-pro",
-    badgeKey: "streak_titan",
-    title: "Two-Week Vocal Ironclad",
-    description: "Achieved a 14-day unbroken daily practice streak.",
+    badgeKey: "streak-7",
+    title: "7 Day Streak",
+    description: "Completed 7 consecutive days of vocal practice without missing a beat.",
     icon: "Flame",
     category: "DEDICATION",
-    progress: 14,
-    maxProgress: 14,
+    progress: 7,
+    maxProgress: 7,
     isUnlocked: true,
-    unlockedAt: "2026-09-28T09:00:00.000Z",
-    tier: "Gold",
+    unlockedAt: "2026-09-21T09:00:00.000Z",
+    tier: "Silver",
   },
   {
     _id: "ach-3",
     userId: "user-elena-vance-pro",
-    badgeKey: "range_pioneer",
-    title: "Three-Octave Explorer",
-    description: "Expanded total demonstrated vocal range to 34+ semitones.",
-    icon: "Music",
-    category: "RANGE",
-    progress: 34,
-    maxProgress: 36,
+    badgeKey: "streak-30",
+    title: "30 Day Streak",
+    description: "A full month of continuous dedication and vocal discipline.",
+    icon: "Zap",
+    category: "DEDICATION",
+    progress: 14,
+    maxProgress: 30,
     isUnlocked: false,
-    tier: "Gold",
+    tier: "Diamond",
   },
   {
     _id: "ach-4",
     userId: "user-elena-vance-pro",
-    badgeKey: "vibrato_lock",
-    title: "Acoustic Resonance Master",
-    description: "Recorded a session with Singer's Formant clarity exceeding 95%.",
-    icon: "Zap",
+    badgeKey: "pitch-master",
+    title: "Pitch Master",
+    description: "Achieved pristine pitch accuracy of 95%+ in an analyzed practice take.",
+    icon: "Crosshair",
+    category: "INTONATION",
+    progress: 93,
+    maxProgress: 95,
+    isUnlocked: false,
+    tier: "Gold",
+  },
+  {
+    _id: "ach-5",
+    userId: "user-elena-vance-pro",
+    badgeKey: "consistency-king",
+    title: "Consistency King",
+    description: "Completed 20+ vocal practice sessions or 5 sessions in a single week.",
+    icon: "Crown",
+    category: "DEDICATION",
+    progress: 18,
+    maxProgress: 20,
+    isUnlocked: false,
+    tier: "Gold",
+  },
+  {
+    _id: "ach-6",
+    userId: "user-elena-vance-pro",
+    badgeKey: "vibrato-virtuoso",
+    title: "Vibrato Virtuoso",
+    description: "Sustained ideal vibrato oscillation within 5.2 - 6.5 Hz window for 5+ seconds.",
+    icon: "Activity",
     category: "VIBRATO",
     progress: 96,
     maxProgress: 95,
@@ -669,31 +708,31 @@ export const mockAchievements: IAchievement[] = [
     tier: "Silver",
   },
   {
-    _id: "ach-5",
+    _id: "ach-7",
     userId: "user-elena-vance-pro",
-    badgeKey: "marathon_voice",
-    title: "1,000 Minutes of Dedication",
-    description: "Logged over 1,000 total minutes of acoustic practice in the studio.",
-    icon: "Award",
-    category: "MILESTONE",
-    progress: 1470,
-    maxProgress: 1000,
+    badgeKey: "range-2-octaves",
+    title: "Two-Octave Titan",
+    description: "Demonstrated a vocal span exceeding 24 semitones in analyzed sessions.",
+    icon: "Music",
+    category: "RANGE",
+    progress: 34,
+    maxProgress: 24,
     isUnlocked: true,
     unlockedAt: "2026-09-18T12:00:00.000Z",
     tier: "Silver",
   },
   {
-    _id: "ach-6",
+    _id: "ach-8",
     userId: "user-elena-vance-pro",
-    badgeKey: "studio_archivist",
-    title: "Century Archivist",
-    description: "Log 100 high-fidelity vocal practice takes in your personal cloud.",
-    icon: "Library",
-    category: "MILESTONE",
-    progress: 84,
+    badgeKey: "high-c-club",
+    title: "The High C Club (C5)",
+    description: "Sustained a resonant, unforced C5 note in mixed voice.",
+    icon: "Sparkles",
+    category: "RANGE",
+    progress: 80,
     maxProgress: 100,
     isUnlocked: false,
-    tier: "Bronze",
+    tier: "Diamond",
   },
 ];
 
@@ -708,8 +747,8 @@ export const mockAnalyticsData = {
     currentRange: "C3 - A5 (34 Semitones)",
     overallScore: 92.4,
     weeklyGrowthPct: 4.6,
-    storageUsedBytes: 1488977920, // 1.39 GB
-    storageMaxBytes: 5368709120, // 5.0 GB
+    storageUsedBytes: 1488977920,
+    storageMaxBytes: 5368709120,
     weeklyUploadCount: 8,
   },
   pitchTrend: mockPitchTrend,
@@ -734,3 +773,281 @@ export const mockAnalyticsData = {
     { day: "Sun", minutes: 70, sessions: 2 },
   ],
 };
+
+export const mockStreakStatus: IStreakStatus = {
+  currentStreak: 14,
+  longestStreak: 18,
+  lastPracticeDate: new Date().toISOString(),
+  streakFreezesRemaining: 2,
+  isPracticedToday: true,
+  streakStatus: "ACTIVE",
+  nextMilestoneDays: 21,
+  daysToNextMilestone: 7,
+  streakHistory: Array.from({ length: 30 }).map((_, i) => ({
+    date: new Date(Date.now() - (29 - i) * 86400000).toISOString().split("T")[0],
+    practiced: i >= 16,
+    minutes: i >= 16 ? [25, 30, 45, 35, 40, 50, 60][i % 7] : 0,
+  })),
+};
+
+export const mockPersonalBests: IPersonalBestsResponse = {
+  records: [
+    {
+      id: "pb-pitch-acc",
+      metric: "PITCH_ACCURACY",
+      label: "Highest Intonation Accuracy",
+      value: "96.4%",
+      numericValue: 96.4,
+      unit: "%",
+      achievedAt: "2026-09-24T14:30:00.000Z",
+      sessionTitle: "Adele - Easy On Me (Acoustic Take)",
+      description: "Exceptional pitch centering with average cents deviation under 5.2 cents.",
+      tier: "Platinum",
+    },
+    {
+      id: "pb-range-span",
+      metric: "RANGE_SPAN",
+      label: "Widest Vocal Range",
+      value: "34 Semitones (2.8 Octaves)",
+      numericValue: 34,
+      unit: "semitones",
+      achievedAt: "2026-09-22T16:15:00.000Z",
+      sessionTitle: "Vocal Sirens & Arpeggios C3-A5",
+      description: "Seamless register traversal from resonant chest C3 up to vaulted head A5.",
+      tier: "Platinum",
+    },
+    {
+      id: "pb-highest-note",
+      metric: "HIGHEST_NOTE",
+      label: "Highest Clean Note",
+      value: "A5",
+      numericValue: 81,
+      unit: "note",
+      achievedAt: "2026-09-22T16:15:00.000Z",
+      sessionTitle: "Vocal Sirens & Arpeggios C3-A5",
+      description: "Clean pharyngeal ring achieved without vocal cord constriction.",
+      tier: "Diamond",
+    },
+    {
+      id: "pb-vibrato-score",
+      metric: "VIBRATO_STABILITY",
+      label: "Best Vibrato Consistency",
+      value: "96%",
+      numericValue: 96,
+      unit: "%",
+      achievedAt: "2026-09-26T15:20:00.000Z",
+      sessionTitle: "Queen - Somebody To Love (Bridge & Agility)",
+      description: "Oscillation frequency locked at 5.7 Hz with 82 cents depth modulation.",
+      tier: "Diamond",
+    },
+    {
+      id: "pb-longest-streak",
+      metric: "DAILY_STREAK",
+      label: "Longest Practice Streak",
+      value: "18 Days",
+      numericValue: 18,
+      unit: "days",
+      achievedAt: "2026-09-28T09:00:00.000Z",
+      description: "Unbroken consecutive daily practice cultivating muscle memory.",
+      tier: "Gold",
+    },
+    {
+      id: "pb-longest-session",
+      metric: "PRACTICE_VOLUME",
+      label: "Longest Focus Session",
+      value: "52 mins",
+      numericValue: 52,
+      unit: "minutes",
+      achievedAt: "2026-09-20T11:00:00.000Z",
+      sessionTitle: "Extended Weekend Vocal Agility Masterclass",
+      description: "Dedicated deep practice including warm-up, drills, and performance takes.",
+      tier: "Gold",
+    },
+  ],
+  totalRecordsBroken: 6,
+  lastUpdated: new Date().toISOString(),
+};
+
+export const mockSmartRecommendations: ISmartRecommendationsResponse = {
+  suggestedDuration: {
+    recommendedMinutes: 30,
+    intensity: "Balanced Workout",
+    rationale:
+      "Optimal vocal stamina detected. A 30-minute workout balancing dynamic control and register navigation will yield peak progress.",
+    fatigueRiskLevel: "Low",
+  },
+  suggestedWarmups: [
+    {
+      id: "wu-1",
+      title: "Semi-Occluded Vocal Tract (SOVT) Straw Phonation",
+      focus: "Acoustic Pressure Balance & Fold Decongestion",
+      durationMinutes: 7,
+      instructions:
+        "Vocalize 5-tone descending scales through a narrow drinking straw into water to balance aerodynamic subglottic pressure.",
+      benefit: "Equalizes vocal fold impact stress, relieving throat tension instantly.",
+      difficulty: "Beginner",
+    },
+    {
+      id: "wu-2",
+      title: "Octave Siren Glides on /Ng/ to /Ee/",
+      focus: "Passaggio Register Smoothing (E4–F#4)",
+      durationMinutes: 8,
+      instructions:
+        "Glide smoothly from lowest comfort note up into mixed head voice on /ng/, opening into /ee/ at the peak without dynamic break.",
+      benefit: "Bridges the chest-to-head register break with minimal laryngeal constriction.",
+      difficulty: "Intermediate",
+    },
+    {
+      id: "wu-3",
+      title: "Staccato Arpeggio Bounces ('Ha-Ha-Ha')",
+      focus: "Diaphragmatic Breath Metering & Intonation",
+      durationMinutes: 6,
+      instructions:
+        "Perform 1-3-5-8-5-3-1 arpeggios on crisp 'Ha' sounds, ensuring breath drive comes from lower abdominals rather than throat squeezing.",
+      benefit: "Locks in pitch centering and prevents intonation droop on descending phrases.",
+      difficulty: "Intermediate",
+    },
+  ],
+  weakAreas: [
+    {
+      id: "wa-1",
+      areaTitle: "Intonation Droop on Descending Phrases",
+      severity: "MODERATE",
+      metricImpacted: "Pitch Accuracy (-14 to -20 cents)",
+      diagnosticObservation:
+        "Subtle flattening noticed on terminal phrases as breath support relaxes prematurely before phonation ceases.",
+      impactExplanation: "Reduces melodic crispness and perceived pitch accuracy on slow ballads.",
+      prescribedRemedy:
+        "Maintain expanded intercostal posture and imagine rising pitch even while singing descending melodies.",
+    },
+    {
+      id: "wa-2",
+      areaTitle: "Passaggio Register Shift (E4 – F#4)",
+      severity: "LOW",
+      metricImpacted: "Timbre Consistency",
+      diagnosticObservation:
+        "Slight tonal thinning observed during transition into mixed head voice around 330 Hz.",
+      impactExplanation: "Can cause sudden timbre changes between verse and chorus.",
+      prescribedRemedy:
+        "Narrow vowels (/oo/ and /ee/) across the break and engage pharyngeal space with an arched soft palate.",
+    },
+  ],
+  vocalHealthTip:
+    "Hydration tip: Systemic vocal fold hydration takes 90–120 minutes. Drink room-temperature water two hours prior to intensive singing.",
+  lastAnalyzedAt: new Date().toISOString(),
+};
+
+export const mockCalendarData: ICalendarMonthResponse = {
+  year: 2026,
+  month: 9,
+  monthName: "September",
+  daysInMonth: 30,
+  activeDaysCount: 22,
+  totalPracticeMinutes: 1470,
+  currentStreak: 14,
+  longestStreak: 18,
+  consistencyRate: 78,
+  days: Array.from({ length: 30 }).map((_, idx) => {
+    const dayNum = idx + 1;
+    const isFuture = dayNum > 28;
+    const isToday = dayNum === 28;
+    const isPracticed = !isFuture && (dayNum >= 14 || dayNum % 3 !== 0);
+    const mins = isPracticed ? [25, 35, 45, 60, 30, 40][dayNum % 6] : 0;
+    let intensity: 0 | 1 | 2 | 3 | 4 = 0;
+    if (mins > 60) intensity = 4;
+    else if (mins > 30) intensity = 3;
+    else if (mins > 15) intensity = 2;
+    else if (mins > 0) intensity = 1;
+
+    return {
+      date: `2026-09-${String(dayNum).padStart(2, "0")}`,
+      dayNumber: dayNum,
+      dayOfWeek: (dayNum + 1) % 7,
+      minutesPracticed: mins,
+      sessionCount: isPracticed ? (mins > 40 ? 2 : 1) : 0,
+      averageScore: isPracticed ? 88 + (dayNum % 8) : null,
+      intensity,
+      sessions: isPracticed
+        ? [
+            {
+              id: `sess-cal-${dayNum}`,
+              title: dayNum % 2 === 0 ? "Vocal Agility & Sirens" : "Repertoire & Dynamics",
+              durationMinutes: mins,
+              overallScore: 88 + (dayNum % 8),
+              pitchAccuracy: 90 + (dayNum % 6),
+              tags: ["Scale Drills", "Pitch Intonation"],
+            },
+          ]
+        : [],
+      isToday,
+      isFuture,
+    };
+  }),
+};
+
+export const mockEmailPreferences: IEmailPreferences = {
+  weeklyDigest: true,
+  monthlyReport: true,
+  streakAlerts: true,
+  achievementAlerts: true,
+  emailAddress: "elena.vance@example.com",
+};
+
+export const mockEmailPreview: IEmailPreviewResponse = {
+  subject: "🎙️ Your Vocalytics Weekly Summary: 14-Day Streak & 93.8% Pitch Accuracy!",
+  html: "<div style='color: white; background: #0c1427; padding: 20px; border-radius: 12px;'><h3>Vocalytics Weekly Digest</h3><p>You practiced 24.5 hours this week with an unbroken 14-day streak!</p></div>",
+  text: "Vocalytics Weekly Digest: You practiced 24.5 hours this week with an unbroken 14-day streak!",
+  data: {
+    userName: "Elena Vance",
+    email: "elena.vance@example.com",
+    totalMinutes: 1470,
+    streakDays: 14,
+    avgScore: 92.4,
+    avgPitch: 93.8,
+    topSessionTitle: "Adele - Easy On Me (Acoustic Take)",
+  },
+};
+
+export const mockNotifications: INotification[] = [
+  {
+    _id: "notif-1",
+    userId: "user-elena-vance-pro",
+    title: "🔥 14-Day Practice Streak Achieved!",
+    message: "Two full weeks of vocal dedication. Your streak shield is active for the next 24 hours.",
+    type: "STREAK_WARNING",
+    priority: "HIGH",
+    isRead: false,
+    createdAt: "2026-09-28T16:00:00.000Z",
+  },
+  {
+    _id: "notif-2",
+    userId: "user-elena-vance-pro",
+    title: "🏆 New Personal Best: 96.4% Intonation!",
+    message: "You set a new all-time record for pitch centering on 'Adele - Easy On Me'.",
+    type: "BADGE_UNLOCKED",
+    priority: "HIGH",
+    isRead: false,
+    createdAt: "2026-09-28T14:30:00.000Z",
+  },
+  {
+    _id: "notif-3",
+    userId: "user-elena-vance-pro",
+    title: "📊 Weekly Performance Report Ready",
+    message: "Your comprehensive vocal health & intonation report for Week 39 is now available.",
+    type: "ANALYSIS_READY",
+    priority: "MEDIUM",
+    isRead: false,
+    createdAt: "2026-09-28T09:00:00.000Z",
+  },
+  {
+    _id: "notif-4",
+    userId: "user-elena-vance-pro",
+    title: "🎯 Goal Milestone: 98% Complete",
+    message: "You are only 5 minutes away from finishing your 500-minute monthly vocal goal!",
+    type: "GOAL_ACHIEVED",
+    priority: "LOW",
+    isRead: true,
+    createdAt: "2026-09-27T18:00:00.000Z",
+  },
+];
+

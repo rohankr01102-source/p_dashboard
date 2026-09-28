@@ -207,3 +207,18 @@ export const getPracticeAnalytics = asyncHandler(
     });
   }
 );
+
+export const getPersonalBests = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response, _next: NextFunction): Promise<void> => {
+    const userId = req.user?._id?.toString() || req.user?.id?.toString();
+    if (!userId) {
+      ApiResponse.error(res, "Authentication required.", 401, "UNAUTHORIZED");
+      return;
+    }
+
+    const { personalBestService } = await import("../services/PersonalBestService");
+    const records = await personalBestService.getPersonalBests(userId);
+    ApiResponse.success(res, records, "Personal best records retrieved successfully.");
+  }
+);
+

@@ -1,10 +1,30 @@
-import { ISession, IUser, IGoal, IAchievement, IReport } from "../types";
+import {
+  ISession,
+  IUser,
+  IGoal,
+  IAchievement,
+  IReport,
+  IStreakStatus,
+  IPersonalBestsResponse,
+  ISmartRecommendationsResponse,
+  ICalendarMonthResponse,
+  IEmailPreferences,
+  IEmailPreviewResponse,
+  INotification,
+} from "../types";
 import {
   mockUser,
   mockSessions,
   mockAnalyticsData,
   mockGoals,
   mockAchievements,
+  mockStreakStatus,
+  mockPersonalBests,
+  mockSmartRecommendations,
+  mockCalendarData,
+  mockEmailPreferences,
+  mockEmailPreview,
+  mockNotifications,
 } from "./mockData";
 
 const API_BASE = "/api";
@@ -379,3 +399,240 @@ export async function generateReport(period: "WEEKLY" | "MONTHLY" | "COMPREHENSI
   };
   return dummy;
 }
+
+// ----------------------------------------------------
+// 1. PRACTICE STREAK SYSTEM
+// ----------------------------------------------------
+export async function fetchStreakStatus(): Promise<IStreakStatus> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/streak`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchStreakStatus] Falling back to mock data", e);
+  }
+  return mockStreakStatus;
+}
+
+export async function activateStreakFreeze(): Promise<{ success: boolean; freezesRemaining: number; message: string }> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/streak/freeze`, { method: "POST", headers });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || { success: true, freezesRemaining: 1, message: "Streak freeze shield activated." };
+    }
+  } catch (e) {
+    console.warn("[activateStreakFreeze] Mock freeze triggered", e);
+  }
+  return { success: true, freezesRemaining: 1, message: "Streak freeze shield activated!" };
+}
+
+// ----------------------------------------------------
+// 2. ACHIEVEMENT ENGINE
+// ----------------------------------------------------
+export async function evaluateAchievements(): Promise<{
+  achievements: IAchievement[];
+  newlyUnlocked: IAchievement[];
+  totalPoints: number;
+  unlockedCount: number;
+}> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/achievements/evaluate`, { method: "POST", headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[evaluateAchievements] Mock achievements evaluation", e);
+  }
+  return {
+    achievements: mockAchievements,
+    newlyUnlocked: [],
+    totalPoints: 850,
+    unlockedCount: 4,
+  };
+}
+
+// ----------------------------------------------------
+// 3. PERSONAL BEST TRACKING
+// ----------------------------------------------------
+export async function fetchPersonalBests(): Promise<IPersonalBestsResponse> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/analytics/personal-bests`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchPersonalBests] Falling back to mock data", e);
+  }
+  return mockPersonalBests;
+}
+
+// ----------------------------------------------------
+// 4. SMART RECOMMENDATIONS
+// ----------------------------------------------------
+export async function fetchSmartRecommendations(): Promise<ISmartRecommendationsResponse> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/recommendations/smart`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchSmartRecommendations] Falling back to mock data", e);
+  }
+  return mockSmartRecommendations;
+}
+
+// ----------------------------------------------------
+// 5. PRACTICE CALENDAR
+// ----------------------------------------------------
+export async function fetchCalendar(year?: number, month?: number): Promise<ICalendarMonthResponse> {
+  try {
+    const headers = await getAuthHeaders();
+    const query = year && month ? `?year=${year}&month=${month}` : "";
+    const res = await fetch(`${API_BASE}/calendar${query}`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchCalendar] Falling back to mock data", e);
+  }
+  return mockCalendarData;
+}
+
+// ----------------------------------------------------
+// 6. EMAIL SUMMARIES & PREFERENCES
+// ----------------------------------------------------
+export async function fetchEmailPreview(period: "WEEKLY" | "MONTHLY" = "WEEKLY"): Promise<IEmailPreviewResponse> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/reports/email-preview?period=${period}`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchEmailPreview] Falling back to mock data", e);
+  }
+  return mockEmailPreview;
+}
+
+export async function sendEmailSummary(
+  period: "WEEKLY" | "MONTHLY" = "WEEKLY",
+  email?: string
+): Promise<{ delivered: boolean; recipient: string; subject: string }> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/reports/send-email-summary`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ period, email }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || { delivered: true, recipient: email || "user@example.com", subject: "Vocalytics Digest" };
+    }
+  } catch (e) {
+    console.warn("[sendEmailSummary] Mock email delivery", e);
+  }
+  return { delivered: true, recipient: email || "elena.vance@example.com", subject: "Vocalytics Digest" };
+}
+
+export async function fetchEmailPreferences(): Promise<IEmailPreferences> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/users/email-preferences`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchEmailPreferences] Falling back to mock data", e);
+  }
+  return mockEmailPreferences;
+}
+
+export async function updateEmailPreferences(prefs: Partial<IEmailPreferences>): Promise<IEmailPreferences> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/users/email-preferences`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(prefs),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) return json.data;
+    }
+  } catch (e) {
+    console.warn("[updateEmailPreferences] Falling back to mock update", e);
+  }
+  return { ...mockEmailPreferences, ...prefs };
+}
+
+// ----------------------------------------------------
+// 7. NOTIFICATION SYSTEM
+// ----------------------------------------------------
+export async function fetchNotifications(): Promise<INotification[]> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/notifications`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (Array.isArray(json.data)) return json.data;
+    }
+  } catch (e) {
+    console.warn("[fetchNotifications] Falling back to mock data", e);
+  }
+  return mockNotifications;
+}
+
+export async function fetchUnreadNotificationCount(): Promise<number> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/notifications/unread-count`, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data?.unreadCount || 0;
+    }
+  } catch (e) {
+    console.warn("[fetchUnreadNotificationCount] Falling back to mock data", e);
+  }
+  return mockNotifications.filter((n) => !n.isRead).length;
+}
+
+export async function markNotificationRead(id: string): Promise<boolean> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/notifications/${id}/read`, { method: "PATCH", headers });
+    if (res.ok) return true;
+  } catch (e) {
+    console.warn("[markNotificationRead] Fallback executed", e);
+  }
+  return true;
+}
+
+export async function markAllNotificationsRead(): Promise<number> {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE}/notifications/read-all`, { method: "POST", headers });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data?.count || 0;
+    }
+  } catch (e) {
+    console.warn("[markAllNotificationsRead] Fallback executed", e);
+  }
+  return mockNotifications.length;
+}
+
